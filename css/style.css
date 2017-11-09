@@ -1,0 +1,28 @@
+label.invalid{
+    position: relative;
+    color: red;
+    font-size: 0.8em;
+}
+.visible{
+    display: block;
+}
+
+.invisible{
+    display: none;
+}
+
+.btnSmallCircle{
+	border-radius: 100%;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	margin: 0em;
+}
+
+body{
+	background: #eeeeee;
+}
+
+#div_alerta{
+	border: solid 1px red;
+}

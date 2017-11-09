@@ -1,0 +1,505 @@
+body{
+    background: #e4f8ea;
+    margin: 0;
+    font-family: "Segoe UI";
+}
+.menu-bar{
+    background: #88c399;
+    text-align: center;
+    width: 100%;
+}
+.menu-bar ul li{
+    display: inline-block;
+    padding: 1em;
+    width: 15%;
+    box-sizing: border-box;
+}
+.menu-bar ul li a{
+    text-decoration: none;
+    color: white;
+    padding: 0.5em 30% 0.5em 30%;
+}
+
+.menu-bar ul li:hover{
+    box-shadow: 0px 0px 5px;
+    background: #6a9877;
+    border-radius: 2px;
+}
+
+header{
+    background: #88c399;
+    text-align: center;
+}
+
+.divtop{
+    width:100%;
+    margin:0 auto;
+    background-color: rgb(244, 244, 244);
+    text-align:center;
+    box-sizing: border-box;
+}
+
+.divtop label{
+    font-size: 3em;
+    font-weight: 500;
+    color: #e66a78;
+}
+
+#form_uno{
+    background: rgba(255, 212, 73, 0.51);
+    margin-top: 2%;
+    padding: 2em;
+    text-align:center;
+}
+#form_uno label{
+    font-size: 2em;
+}
+#form_uno input{
+    font-size: 1.5em;
+    padding: 0.5em;
+    border: none;
+    border-radius: 3px;
+    background-color: whitesmoke;
+    margin: 1em;
+}
+.boton{
+    font-size: 1.5em;
+    padding: 0.5em;
+    background-color: #6a9877;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    width: 150px;
+    margin:0 auto;
+}
+.boton span{
+    font-size: 1.3em;
+    margin-right: 0.5em;
+}
+.boton:hover{
+    box-shadow: 0px 0px 8px #000;
+}
+
+#form_dos{
+    display: inline-block;
+    width: 90%;
+}
+
+.titcol{
+    font-size: 1.5em;
+}
+.campo_in{
+    font-size: 1.5em;
+    width: 80%;
+    border-radius: 3px;
+    border: none;
+    padding: 0.5em;
+}
+#tabla_nvo{
+    width: 100%;
+}
+#tabla_nvo button{
+    font-size: 1em;
+}
+
+#diventas{
+    position: absolute;
+    background: rgba(255, 217, 95, 0.57);
+    margin-top: 2%;
+    width:  100%;
+    padding: 2em;
+    text-align:center;
+    box-sizing: border-box;
+}
+
+#tabla_vta{
+    border-radius: 3px;
+    width: 100%;
+    margin-top: 1em;
+}
+.visible{
+    display: block;
+}
+
+.invisible{
+    display: none;
+}
+
+#tabla_vta td{
+    border-radius: 2px;
+}
+
+.tit_col{
+    background: #6a9877;
+    color: white;
+    border-radius: 3px;
+}
+hr{
+    margin-top: 3em;
+    border: solid 1px;
+}
+
+.botones{
+    width: 70px;
+}
+
+.botones span{
+    margin-right: 5px;
+}
+
+
+.btn_editar{
+    margin: 1px;
+    width: 80px;
+}
+
+.btn_quitar{
+    margin: 1px;
+    width: 80px;
+    
+}
+
+
+.campo{
+    background: beige;
+}
+body{
+    background: #e4f8ea;
+    margin: 0;
+    font-family: "Segoe UI";
+}
+
+
+#form_ent{
+    background: rgba(255, 212, 73, 0.51);
+    margin-top: 2%;
+    padding: 2em;
+    text-align:center;
+    box-sizing: border-box;
+}
+#form_ent label{
+    font-size: .8em;
+}
+
+#form_ent table{
+    width: 80%;
+    margin-left: 10%;
+    box-sizing: border-box;
+}
+#form_ent input{
+    font-size: 1em;
+    border: none;
+    border-radius: 3px;
+    background-color: whitesmoke;
+    margin:0.5em;
+}
+
+#divent{
+    background: rgba(255, 212, 73, 0.51);
+    padding: 2em;
+}
+#divent table{
+    text-align: center;
+    width: 80%;
+    margin-left: 10%;
+}
+
+
+#divent table campo{
+   background: rgba(255,255,255, 0.5);
+   padding: 0.2em;
+}
+#divent table div{
+    background: #FFC107;
+    border-radius: 3px;
+    color: white;
+    padding: 0.2em;
+}
+
+#divent table div:hover{
+    background: #dca80a;
+}
+#divent table #col_acc{
+    width: 110px;
+}
+
+#divent table span{
+    width: 16px;
+    padding: 2px;
+    margin-left: 4px;
+}
+
+#btn_acept{
+    font-size:1em;
+    width: 100px;
+    margin-left: 0;
+}
+
+#in_search{
+    float: right;
+    background: white;
+    border-radius: 10px;
+}
+
+#in_search span{
+    padding: 0.5em;
+    float:right;
+    border-radius: 0px 10px 10px 0px;
+}
+#in_search span:hover{
+    background: #d6d6d6;
+}
+
+#in_search input{
+    padding: 0.6em;
+    border-radius: 20px 20px 20px 20px;
+    border: none;
+}
+#divprods{
+    margin-left: 0;
+    margin-top: 1em;
+    width: 100%;
+    box-sizing: border-box;
+}
+#divprods table{
+    width: 100%;
+}
+#apuno{
+    background: rgba(253, 212, 82, 0.57);
+    padding: 2em;
+    /* margin:0px; */
+    margin-top: 1em;
+    width: 69%;
+    margin-left: 0px;
+    border-radius: 0px 5px 5px 0px;
+    border-box: border-box;
+    display: inline-block;
+}
+#apuno label{
+    font-size: 1.5em;
+    font-weight: 500;
+}
+#apdos{
+    background: rgba(239, 186, 107, 0.77);
+    padding: 2em;
+    width: 30%;
+    margin-top: 1em;
+    box-sizing: border-box;
+    float: right;
+    display: inline-block;
+    border-radius: 5px 0px 0px 5px
+}
+#apdos label{
+    font-size: 1.2em;
+}
+
+.camposwar{
+    background: rgba(255, 255, 255, 0.72);
+    height: 1.2em;
+    color: #e07d89;
+    border-bottom: solid 1px;
+}
+
+#apuno .campo{
+    height: 1.2em;
+    border-bottom: solid 1px #ccc;
+}
+
+#divrep{
+    background: rgba(253, 212, 82, 0.57);
+    width: 30%;
+    margin: 0 auto;
+    padding: 2em;
+    margin-top: 1em;
+    border-radius: 5px;
+}
+
+#divrep .boton{
+    margin: 0 auto;
+    margin-bottom: 1em;
+    width: 70%;
+}
+
+.boton a{
+    text-decoration:none;
+    color: white;
+}
+
+#divrep2{
+    margin: 4em;
+}
+
+#imgrep{
+    width: 70px;
+    margin-left: -40%;
+}
+
+#divrep2 table{
+    width: 100%;
+}
+
+#divrep2 .campo{
+    height: 1.2em;
+    background:#f1f1f1
+}
+
+#bodrep{
+    background: none;
+}
+
+header #labrep{
+    font-size: 1.2em;
+    float: right;
+    margin-top: 1em;
+    margin-right: 10%;
+}
+
+#btn_imp{
+    margin: 0 auto;
+    width: 90px;
+    padding: 0.5em;
+    background: #bfd0e0;
+    border-radius: 5px;
+}
+
+#btn_imp:hover{
+    background: #8fa9c1;
+}
+
+#btn_imp span{
+    padding: 5px;
+}       
+
+#divuprep{
+    width: 100%;
+    margin-top: 1em;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+#div_dev{
+    background: rgba(253, 212, 82, 0.57);
+    width: 20%;
+    margin: 0 auto;
+    padding: 2em;
+    margin-top: 1em;
+    border-radius: 5px;
+}
+ 
+#div_dev input{
+    margin: 1em;
+    display: block;
+} 
+
+#div_dev .boton{
+    font-size: 1.2em;
+    margin-top: 1em;
+    bottom: 90px;
+    left: 15%;
+}
+#btn_canc{
+    float:left;
+}
+#btn_canc span{
+    padding-right: 0.5em;
+}
+#btn_term{
+    float:right;
+}
+#btn_term span{
+    padding-right: 0.5em;
+}
+
+.invalid{
+    font-weight: lighter;
+    color: red;
+}
+
+#form_uno label.invalid{
+    font-size: 1.2em;
+}
+
+#container_modal form{
+    width: 60%;
+    margin: 0 auto;
+}
+#container_modal form input{
+    margin-bottom: 1em;
+}
+#container_modal form select{
+    margin-bottom: 1em;
+}
+
+#tabla_productos th{
+    text-align: center;
+}
+
+#tabla_productos td{
+    text-align: center;
+}
+
+#btn_addtalla{
+    padding: 0.2em;
+    font-size: .8em;
+    width: 2em;
+    float: right;
+}
+
+.btn_editprod span{
+    text-align: center;
+    padding: 0.2em;
+    font-size: .8em;
+    width: 4em;
+    margin: 2px;
+}
+.btn_infoprod span{
+    text-align: center;
+    padding: 0.2em;
+    font-size: .8em;
+    width: 4em;
+    margin: 2px;
+}
+
+.btn_deta{
+    width: 100%;
+    height: 80%;
+    margin: 2px;
+}
+.btn_deta span{
+    text-align: center;
+    font-size: 1em;
+    margin: : 0 auto;
+}
+
+#tabla_productosw th{
+    text-align: center;
+}
+
+#tabla_entradas th{
+    text-align: center;
+}
+
+#btn_newdev{
+    position: absolute;
+    right: 2%;
+}
+
+
+#btn_newdev span{
+    margin-right: 5px;
+}
+
+
+#btn_addcatego{
+    position:absolute;
+    margin-left: 25em;
+}
+
+
+#btn_catalogo{
+    margin-left: 19em;
+    margin-top: -3%;
+}
+#btn_catalogo span{
+    margin-right: 6px;
+}

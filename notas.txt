@@ -1,0 +1,1 @@
+Marco: Intenté hacer validaciones para la ventana modal que registra nuevos productos pero no las realiza. 20/05/2017 11:28 pm
