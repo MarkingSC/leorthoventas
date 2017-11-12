@@ -44,11 +44,8 @@
 			$p_codigo=$_POST['codigo'];
 			$descripcion=$_POST['descripcion'];
 			$categoria=$_POST['categoria'];
-			$talla=$_POST['talla'];
 			$minimo=$_POST['minimo'];
-			$exi=$_POST['exi'];
-			$sql="CALL mod_prod('".$p_codigo."','".$descripcion."','".$categoria."','".$talla."','".$minimo."');";
-			print_r($sql);
+			$sql="CALL mod_prod('".$p_codigo."','".$descripcion."','".$categoria."','".$minimo."');";
 			$result=$conexion->query($sql)or trigger_error($conexion->error."[$sql]");
 			$sql2="update productos set existencias='".$exi."' where codigo='".$p_codigo."';";
 			$conexion->query($sql2)or trigger_error($conexion->error."[$sql2]");
@@ -68,9 +65,10 @@
 			print_r(json_encode($datos));
 			break;
 
-		case 'get_one_catalogo':
-			$sql="Select productos.id_producto as id, descripcion_p as nombre, ruta from productos, rutas_catalogo where productos.id_producto=rutas_catalogo.id_producto and productos.id_producto=".$_POST['id'].";";
+		case 'get_one_info':
+			$sql="Select  * from vista_infoprods where id_producto=".$_POST['id'].";";
 			$result=$conexion->query($sql)or trigger_error($conexion->error."[$sql]");
+			$datos=array();
 			while($row=$result->fetch_array())
 				$datos[]=$row;
 			print_r(json_encode($datos));

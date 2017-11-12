@@ -1,36 +1,37 @@
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">
-						<span aria-hidden="true">&times;</span>
-						<span class="sr-only">Close</span>
-					</button>
-					<h4 class="modal-title" id="myModalLabel">Editar Producto</h4>
-				</div>
-				<div class="modal-body">
-					<form action="insert" style="background: none" method="post"  id="form_edit-productos" name="form_edit_prods">
-						<input type="hidden" name="action" value="update">
-						<input type="hidden" name="codigo" value='<?php echo $_GET["codigo"]?>'>
-						<input id="descripcion" type="text" name="descripcion" placeholder="Nombre del producto" class="form-control">
-						<select id="categoria" name="categoria" class="form-control" id="categoria">
-						 </select>
-						 <select id="talla" name="talla" class="form-control" id="talla">
-						 </select>
-						<input type="text" id="minimo" name="minimo" placeholder="Cantidad mínima para alertar" class="form-control">
-						<input type="text" id="exi" name="exi" placeholder="existencias" class="form-control">
-					</form>
-				</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-						<button type="button" class="btn btn-primary" id="btn_aceptar">Aceptar</button>
-					</div>
+
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="myModalLabel">Editar Producto</h4>
 			</div>
+			<div class="modal-body">
+				<form action="insert" style="background: none" method="post"  id="form_edit-productos" name="form_edit_prods">
+					<input type="hidden" name="action" value="update">
+					<input type="hidden" name="codigo" value='<?php echo $_GET["codigo"]?>'>
+					<div class="input-field">
+						<input id="descripcion" type="text" name="descripcion">
+						<label>Descripción</label>
+					</div>
+					<div class="input-field">
+						<select id="categoria" name="categoria">
+						 </select>
+					</div>
+					<div class="input-field">
+						<input type="text" id="minimo" name="minimo" tooltip="Cantidad mínima para alertar">
+						<label>Mínimo</label>
+					</div>
+				</form>
+			</div>
+				<div class="modal-footer">
+					<button type="button" class="btn waves-effect waves-teal red modal-action modal-close" data-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn waves-effect waves-teal blue" id="btn_aceptar">Aceptar</button>
+				</div>
 		</div>
 	</div>
-	<script type="text/javascript">
-	$('#myModal').modal();	
 
+	<script type="text/javascript">
+		$('#container_modal2').html($("#modal_confirm_edit"));
+		$('#container_modal2').modal();
 		get_all_categos();
 		function get_all_categos(){
 			$.post("core/categorias/controller_categos.php", {action:'get_all'}, function(res){
@@ -44,10 +45,11 @@
 					//se insertan los datos a la tabla
 				}
 				$('#categoria').html(cod_html);
+        		$('select').material_select();
 			});
 		}
 
-		get_all_tallas();
+		/*get_all_tallas();
 		function get_all_tallas(){
 			$.post("core/tallas/controller_tallas.php", {action:'get_all'}, function(res){
 				console.log(res);
@@ -58,20 +60,18 @@
 					var info=datos[i];
 					cod_html+="<option value="+info['desc_talla']+">"+info['desc_talla']+"</option>";
 				}
-				$('#talla').html(cod_html);
 			});
-		}
+		}*/
 
-		var codigo_prod="En el formulario:"+<?php echo $_GET["codigo"]?>;
-		console.log(codigo_prod);
 		$.post("core/productos/controller_productos.php", {action:"get_one", codigo:<?php echo $_GET["codigo"]?>}, function(res){
 						var dat=JSON.parse(res);
 						dat=dat[0];						
 						console.log(dat);
-						$("#descripcion").val(dat["descripcion_p"]);
-						$("#categoria").val(dat["id_categoria"]);
-						$("#talla").val(dat["id_categoria"]);
-						$("#minimo").val(dat["minimo"]);      
+						$("#descripcion").val(dat["producto"]);
+						$("#categoria").val(dat["categoria"]);
+						$("#minimo").val(dat["minimo"]);   
+						Materialize.updateTextFields(); 
+						$('select').material_select();  
 		});
 
 		$("#btn_aceptar").click(function(){
@@ -93,36 +93,33 @@
 					minimo:{required:"Asigne el valor minimo que debe haber en stock"},
 				},
 				submitHandler: function(form){
-					$('#modal_confirm_edit').modal();
+					$('#container_modal2').modal("open");
 					$('#btn_confirm_edit').click(function(event){
 					$.post("core/productos/controller_productos.php", $('#form_edit-productos').serialize(), function(){
+						get_all_pagot();
 						get_all_productos();
-						$("#modal_confirm_edit").modal("hide");
+						$("#container_modal2").modal("close");
 					});
-				$('#myModal').modal("hide");
+				$('#container_modal').modal("close");
 			});
 			}
 		});
 
 	</script>
 
-<div class="modal fade" id="modal_confirm_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">
-						<span aria-hidden="true">&times;</span>
-						<span class="sr-only">Close</span>
-					</button>
-					<h4 class="modal-title" id="myModalLabel">Guardar Cambios</h4>
-				</div>
-				<div class="modal-body">
-				¿Desea guardar los cambios efectuados?
-				</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-						<button type="button" class="btn btn-primary" id="btn_confirm_edit">Aceptar</button>
-					</div>
+<aside id="modal_confirm_edit">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="myModalLabel">Guardar Cambios</h4>
 			</div>
+			<div class="modal-body">
+			¿Desea guardar los cambios efectuados?
+			</div>
+				<div class="modal-footer">
+					<button type="button" class="btn waves-effect waves-teal red modal-action modal-close" data-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn waves-effect waves-teal blue" id="btn_confirm_edit">Aceptar</button>
+				</div>
 		</div>
 	</div>
+</aside>

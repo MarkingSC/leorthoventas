@@ -15,34 +15,34 @@
 	<script>
 		$(document).ready(function(){
 			get_all_pagot();
+			$(".modal").modal();
 		$('#btn_add').click(function(){
 			$('#container_modal').load("core/productos/form_create_productos.php");
-			$('#container_modal').modal(); 
 			$('#container_modal').modal("open");
 			get_all_productos();
 		});
             //ACCIONES PARA EL BOTÓN DE EDITAR PRODUCTOS
 			$("#tbody_prods").on("click", "a.btn_editprod", function(){
 				var codigo=$(this).data("id");
-				console.log("en el boton "+codigo);
 				$('#container_modal').load("core/productos/form_edit_productos.php?codigo="+codigo);
+				$('#container_modal').modal("open"); 
 			});
             //ACCIONES PARA EL BOTÓN DE DETALLES
             $("#tbody_prods").on("click", "a.btn_infoprod", function(){
 				var codigo=$(this).data("id");
-				console.log("en el boton "+codigo);
 				$('#container_modal').load("core/productos/info_prod.php?id="+codigo);
+				$('#container_modal').modal("open"); 
 			});
             //ACCIONES PARA EL BOTÓN DE ELIMINAR PRODUCTO
             $("#tbody_prods").on("click", "a.btn_bajaprod", function(){
 				var id=$(this).data("id");
 				console.log("en el boton "+id);
-				$('#modal_confirm_quitar').modal();
+				$('#modal_confirm_quitar').modal("open");
                 $('#btn_confirm_quit').click(function(event){
                     $.post("core/productos/controller_productos.php", {action:"delete", id_producto:id}, function(){
                         get_all_pagot();
                         get_all_productos();
-                        $('#modal_confirm_quitar').modal('hide');
+                        $('#modal_confirm_quitar').modal('close');
                     });
                 });
 			});
@@ -73,7 +73,7 @@
 						<tr>
 							<th class="tit_col">Código</th>
 							<th class="tit_col">Producto</th>
-							<th class="tit_col">Talla <a id="btn_addtalla" href='#' class="btn green" style="width: 2em; height: 1.8em; padding:0em"><span class="material-icons">add</span></a></th>
+							<!--<th class="tit_col">Talla <a id="btn_addtalla" href='#' class="btn green" style="width: 2em; height: 1.8em; padding:0em"><span class="material-icons">add</span></a></th>-->
 							<th class="tit_col">Precio</th>
 							<th class="tit_col">Disponibles</th>
 							<th class="tit_col" style="width: 4em;" colspan="3">Acciones</th>
@@ -104,36 +104,32 @@
 	<aside id="container_modal" class="modal"></aside>
 	<aside id="container_modal2" class="modal"></aside>
 </body>
-<div class="modal fade" id="modal_confirm_quitar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal" id="modal_confirm_quitar">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">
-					<span aria-hidden="true">&times;</span>
-					<span class="sr-only">Close</span>
-				</button>
 				<h4 class="modal-title" id="myModalLabel">Dar de baja un producto</h4>
 			</div>
 			<div class="modal-body">
 			¿De verdad desea dar de baja el producto?
 			</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-					<button type="button" class="btn btn-primary" id="btn_confirm_quit">Aceptar</button>
+					<button type="button" class="btn waves-effect waves-teal red modal-action modal-close">Cancelar</button>
+					<button type="button" class="btn waves-effect waves-teal blue" id="btn_confirm_quit">Aceptar</button>
 				</div>
 		</div>
 	</div>
 </div>
 <script>
-	$('#btn_catalogo').click(function(){
-		$('#container_modal').load("core/productos/catalogo.php");
+	$("#tabla_productosw").on("click", "a.btnInfoProdAlert", function(){
+		var codigo=$(this).data("id");
+			$('#container_modal').load("core/productos/info_prod.php?id="+codigo);
+			$('#container_modal').modal("open"); 
 	});
-	$('a.btn_infoprod').click(function(){
-		$('#container_modal').load("core/productos/info_productos.php");
-	});
-	$('#btn_addtalla').click(function(){
+	/*$('#btn_addtalla').click(function(){
 		$('#container_modal').load("core/tallas/form_create_talla.php");
-	});
+		$("#container_modal").modal("open");
+	});*/
 	get_all_productos();
 	function get_all_productos(){
 		$.post("core/productos/controller_productos.php", {action:"get_all"}, function(res){
@@ -142,7 +138,7 @@
 			for (var i=0;i<datos.length;i++) 
 			{
 				var info=datos[i];
-				cod_html+="<tr><td>"+info['codigo']+"</td><td>"+info['descripcion_p']+"</td><td>"+info['id_categoria']+"</td><td>"+info['precio_venta']+"</td><td>"+info['existencias']+"</td><td style='text-align: center; width: 50px;'><a href='#' class='btn blue btnSmallCircle' data-id="+info['codigo']+" tooltip='Editar producto'><span class='material-icons'>edit</span></a></td><td style='text-align: center; width: 50px;'><a href='#' class='btn orange btnSmallCircle' data-id="+info['id']+"><span class='material-icons'>info</span></a><td style='text-align: center; width: 50px;'><a href='#' class='btn red btnSmallCircle' data-id="+info['id']+"><span class='material-icons'>delete</span></a></td></tr>";
+				cod_html+="<tr><td>"+info['codigo']+"</td><td>"+info['descripcion_p']+"</td><td>"+info['precio_venta']+"</td><td>"+info['existencias']+"</td><td style='text-align: center; width: 50px;'><a href='#' class='btn blue btnSmallCircle btn_editprod' data-id="+info['codigo']+" tooltip='Editar producto'><span class='material-icons'>edit</span></a></td><td style='text-align: center; width: 50px;'><a href='#' class='btn orange btnSmallCircle btn_infoprod' data-id="+info['id_producto']+"><span class='material-icons'>info</span></a><td style='text-align: center; width: 50px;'><a href='#' class='btn red btnSmallCircle btn_bajaprod' data-id="+info['id_producto']+"><span class='material-icons'>delete</span></a></td></tr>";
 				//se insertan los datos a la tabla
 			}
 			$("#tbody_prods").html(cod_html);
@@ -155,7 +151,7 @@
 			for (var i=0;i<datos.length;i++) 
 			{
 				var info=datos[i];
-				cod_html+="<tr><td class='camposwar'>"+info['descripcion']+"</td><td class='camposwar'>"+info['disponibles']+"</td><td class='camposwar'><a href='#' class='btn orange btnSmallCircle'><span class='material-icons'>info</span></a></td></tr>";
+				cod_html+="<tr><td>"+info['descripcion']+"</td><td>"+info['existencias']+"</td><td><a href='#' class='btn orange btnSmallCircle btnInfoProdAlert' data-id="+info['id_producto']+"><span class='material-icons'>info</span></a></td></tr>";
 				//se insertan los datos a la tabla
 			}
 			$("#tbody_pagot").html(cod_html);

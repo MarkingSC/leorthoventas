@@ -1,28 +1,24 @@
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">
-						<span aria-hidden="true">&times;</span>
-						<span class="sr-only">Close</span>
-					</button>
-					<h4 class="modal-title" id="myModalLabel">Terminar venta</h4>
-				</div>
-				<div class="modal-body">
-					<form action="insert" style="background: none" method="post"  id="form_finish_venta" name="form_finish_venta">
-						<input type="text" name="efectivo" id="efectivo" placeholder="Efectivo" class="form-control">
-						<label id="lbl_cambio"></label>
-					</form>
-				</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-						<button type="button" class="btn btn-primary" id="btn_term_vta">Aceptar</button>
-					</div>
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="myModalLabel">Terminar venta</h4>
 			</div>
+			<div class="modal-body">
+				<form action="insert" style="background: none" method="post"  id="form_finish_venta" name="form_finish_venta">
+					<div class="input-field">
+						<input type="text" name="efectivo" id="efectivo">
+						<label>Efectivo</label>
+					</div>
+					<label id="lbl_cambio"></label>
+				</form>
+			</div>
+				<div class="modal-footer">
+					<button type="button" class="btn waves-effect waves-teal red modal-action modal-close">Cancelar</button>
+					<button type="button" class="btn waves-effect waves-teal blue" id="btn_term_vta">Aceptar</button>
+				</div>
 		</div>
 	</div>
 	<script type="text/javascript">
-	$('#myModal').modal();	
 
 	$('#btn_term_vta').click(function(){
 		$('#form_finish_venta').submit();
@@ -54,7 +50,7 @@
 					console.log(cambio);
 					alert("Cambio: "+cambio);
 					window.location="index.php";
-					$('#myModal').modal("hide");
+					$('#container_modal').modal("close");
 				}
 			});
 		}

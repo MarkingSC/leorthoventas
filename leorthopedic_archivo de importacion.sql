@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 09-11-2017 a las 03:56:42
+-- Tiempo de generación: 12-11-2017 a las 00:45:23
 -- Versión del servidor: 5.7.19
 -- Versión de PHP: 5.6.31
 
@@ -60,17 +60,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `mod_cantventa` (`pid_venta` INT, `p
 END$$
 
 DROP PROCEDURE IF EXISTS `mod_prod`$$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `mod_prod` (`p_codigo` VARCHAR(45), `p_descripcion` VARCHAR(45), `p_categoria` VARCHAR(45), `p_talla` VARCHAR(45), `p_minimo` INT)  BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `mod_prod` (IN `p_codigo` VARCHAR(45), IN `p_descripcion` VARCHAR(45), IN `p_categoria` VARCHAR(45), IN `p_minimo` INT)  BEGIN
 	DECLARE vid_catego INT;
-	DECLARE vid_talla INT;
 	DECLARE vid_prod INT;
 	DECLARE vid_clasificacion INT;
 	SELECT id_categoria into vid_catego from categorias WHERE descripcion_c LIKE p_categoria;
-	SELECT id_talla into vid_talla FROM tallas WHERE desc_talla LIKE p_talla;
-	SELECT id_producto into vid_prod FROM productos WHERE  productos.codigo=p_codigo;
-	SELECT id_clasificacion INTO vid_clasificacion FROM clasificaciones WHERE clasificaciones.id_producto=vid_prod;
+	SELECT id_producto into vid_prod FROM productos WHERE  codigo LIKE p_codigo;
 		UPDATE productos SET descripcion_p=p_descripcion, id_categoria=vid_catego, minimo=p_minimo WHERE id_producto=vid_prod;
-		UPDATE assign_tallas SET id_talla=vid_talla WHERE id_clasificacion=vid_clasificacion;
 END$$
 
 DROP PROCEDURE IF EXISTS `nva_cancel`$$
@@ -340,7 +336,7 @@ CREATE TABLE IF NOT EXISTS `entradas` (
   `observaciones` tinytext,
   `fecha` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_entrada`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `entradas`
@@ -348,7 +344,10 @@ CREATE TABLE IF NOT EXISTS `entradas` (
 
 INSERT INTO `entradas` (`id_entrada`, `id_producto`, `cantidad`, `costo`, `observaciones`, `fecha`) VALUES
 (1, 1, 5, 80, '', '2017-11-09 03:08:00'),
-(2, 1, 3, 58, '', '2017-11-09 03:12:22');
+(2, 1, 3, 58, '', '2017-11-09 03:12:22'),
+(3, 1, 10, 160, '', '2017-11-09 15:37:20'),
+(4, 2, 6, 1100, '', '2017-11-09 16:26:56'),
+(5, 2, 4, 2000, '', '2017-11-09 16:30:55');
 
 -- --------------------------------------------------------
 
@@ -381,14 +380,16 @@ CREATE TABLE IF NOT EXISTS `productos` (
   `existencias` int(11) DEFAULT NULL,
   PRIMARY KEY (`id_producto`),
   UNIQUE KEY `codigo` (`codigo`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `productos`
 --
 
 INSERT INTO `productos` (`id_producto`, `codigo`, `descripcion_p`, `id_categoria`, `precio_venta`, `precio_adq`, `minimo`, `existencias`) VALUES
-(1, '12345', 'Rodillera beige', 3, 23, 0, 5, 1);
+(3, '12345', 'CollarÃ­n Beige', 1, 280, 0, 4, 0),
+(2, '22222', 'Muleta', 3, 270, 0, 2, 1),
+(4, '11111', 'Andadera aluminio', 3, 500, 0, 2, 0);
 
 -- --------------------------------------------------------
 
@@ -449,7 +450,7 @@ CREATE TABLE IF NOT EXISTS `tickets` (
   `fecha` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `procesado` int(11) NOT NULL,
   PRIMARY KEY (`id_ticket`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `tickets`
@@ -462,7 +463,16 @@ INSERT INTO `tickets` (`id_ticket`, `cliente`, `total`, `fecha`, `procesado`) VA
 (4, 'Cari', 0, NULL, 0),
 (5, 'Marco', 0, NULL, 0),
 (6, 'Marco', 0, NULL, 0),
-(7, 'Marco', 0, NULL, 0);
+(7, 'Marco', 0, NULL, 0),
+(8, 'Marco', 0, NULL, 0),
+(9, 'Marco', 23, NULL, 1),
+(10, 'Marco', 0, NULL, 0),
+(11, 'Gaby', 540, NULL, 1),
+(12, 'gaby', 0, NULL, 0),
+(13, 'Gaby', 540, NULL, 1),
+(14, 'Marco', 810, NULL, 1),
+(15, 'Marco', 0, NULL, 0),
+(16, 'Marco', 69, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -491,7 +501,7 @@ CREATE TABLE IF NOT EXISTS `ventas` (
   `id_ticket` int(11) NOT NULL,
   `subtotal` float NOT NULL,
   PRIMARY KEY (`id_venta`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `ventas`
@@ -501,7 +511,30 @@ INSERT INTO `ventas` (`id_venta`, `id_producto`, `cantidad`, `id_ticket`, `subto
 (1, 1, 2, 3, 46),
 (2, 1, 2, 4, 46),
 (3, 1, 2, 6, 46),
-(4, 1, 1, 7, 23);
+(4, 1, 1, 7, 23),
+(5, 1, 1, 8, 23),
+(6, 1, 1, 9, 23),
+(7, 2, 2, 11, 540),
+(8, 2, 1, 12, 270),
+(9, 2, 1, 12, 270),
+(10, 2, 2, 13, 540),
+(11, 2, 3, 14, 810),
+(12, 1, 2, 16, 46),
+(13, 1, 1, 16, 23);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `vista_editproductos`
+-- (Véase abajo para la vista actual)
+--
+DROP VIEW IF EXISTS `vista_editproductos`;
+CREATE TABLE IF NOT EXISTS `vista_editproductos` (
+`codigo` varchar(45)
+,`producto` varchar(100)
+,`categoria` varchar(45)
+,`minimo` int(11)
+);
 
 -- --------------------------------------------------------
 
@@ -520,13 +553,30 @@ CREATE TABLE IF NOT EXISTS `vista_entradas` (
 -- --------------------------------------------------------
 
 --
+-- Estructura Stand-in para la vista `vista_infoprods`
+-- (Véase abajo para la vista actual)
+--
+DROP VIEW IF EXISTS `vista_infoprods`;
+CREATE TABLE IF NOT EXISTS `vista_infoprods` (
+`id_producto` int(11)
+,`codigo` varchar(45)
+,`producto` varchar(100)
+,`categoria` varchar(45)
+,`minimo` int(11)
+,`existencias` int(11)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura Stand-in para la vista `vista_pagot`
 -- (Véase abajo para la vista actual)
 --
 DROP VIEW IF EXISTS `vista_pagot`;
 CREATE TABLE IF NOT EXISTS `vista_pagot` (
-`descripcion` varchar(100)
-,`disponibles` int(11)
+`id_producto` int(11)
+,`descripcion` varchar(100)
+,`existencias` int(11)
 );
 
 -- --------------------------------------------------------
@@ -541,6 +591,15 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Estructura para la vista `vista_editproductos`
+--
+DROP TABLE IF EXISTS `vista_editproductos`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_editproductos`  AS  (select `productos`.`codigo` AS `codigo`,`productos`.`descripcion_p` AS `producto`,`categorias`.`descripcion_c` AS `categoria`,`productos`.`minimo` AS `minimo` from (`productos` join `categorias`) where (`productos`.`id_categoria` = `categorias`.`id_categoria`)) ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura para la vista `vista_entradas`
 --
 DROP TABLE IF EXISTS `vista_entradas`;
@@ -550,11 +609,20 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Estructura para la vista `vista_infoprods`
+--
+DROP TABLE IF EXISTS `vista_infoprods`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_infoprods`  AS  (select `productos`.`id_producto` AS `id_producto`,`productos`.`codigo` AS `codigo`,`productos`.`descripcion_p` AS `producto`,`categorias`.`descripcion_c` AS `categoria`,`productos`.`minimo` AS `minimo`,`productos`.`existencias` AS `existencias` from (`productos` join `categorias`) where (`productos`.`id_categoria` = `categorias`.`id_categoria`)) ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura para la vista `vista_pagot`
 --
 DROP TABLE IF EXISTS `vista_pagot`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_pagot`  AS  (select `productos`.`descripcion_p` AS `descripcion`,`productos`.`existencias` AS `disponibles` from `productos` where (`productos`.`existencias` <= `productos`.`minimo`)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_pagot`  AS  (select `productos`.`id_producto` AS `id_producto`,`productos`.`descripcion_p` AS `descripcion`,`productos`.`existencias` AS `existencias` from `productos` where (`productos`.`existencias` <= `productos`.`minimo`)) ;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

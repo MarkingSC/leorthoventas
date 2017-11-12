@@ -14,25 +14,28 @@
 	<script>
 		$(document).ready(function(){
 			Materialize.updateTextFields();
+			$('#modal_confirm_quitar').modal();
+			$('#modal_editar').modal();
+        	$('#modal_confirm_cancelar').modal();
 
 			$("#content_table").on("click", "button.btn_quitar", function(){
 				var id_venta=$(this).data("id");
 				console.log("id de venta: "+id_venta);
-				$('#modal_confirm_quitar').modal();
+				$('#modal_confirm_quitar').modal("open");
 				$('#btn_confirm_quit').click(function(event){
 				console.log("entro a la funcion del boton");
 				$.post("core/ventas/controller_ventas.php", {action:"delete", id_venta:id_venta}, function(){
 					get_all_ventas();
 					get_total();
 				});
-				$('#modal_confirm_quitar').modal("hide");
+				$('#modal_confirm_quitar').modal("close");
 				});
 			});
 
 			$("#content_table").on("click", "button.btn_editar", function(){
 				var id_venta=$(this).data("id");
 				console.log("id de venta: "+id_venta);
-				$('#modal_editar').modal();
+				$('#modal_editar').modal("open");
 				$.post("core/ventas/controller_ventas.php", {action:"get_cantidad", id_venta:id_venta},function(res){
 						var info;
 						var datos=JSON.parse(res);
@@ -125,7 +128,7 @@
 			</div> 
 		</div>
 	</div>
-	<aside id="container_modal"></aside>
+	<aside id="container_modal" class="modal"></aside>
 </body>
 <script type="text/javascript">
 	function get_total(){
@@ -151,16 +154,19 @@
 			});	
 	}
 	$("#btn_newdev").click(function(){
+		$('#container_modal').modal();
 		$("#container_modal").load("core/devoluciones/form_create_devolucion.php");
+		$('#container_modal').modal("open");
 	});
 
 	$('#btn_term').click(function(){
+		$('#container_modal').modal();
 		$('#container_modal').load("core/ventas/form_finish_venta.php?total="+$('#lbl_total').text());
+		$('#container_modal').modal("open");
 	});
     
     $('#btn_canc').click(function(){
-        $('#modal_confirm_cancelar').modal();
-        
+		$('#modal_confirm_cancelar').modal("open");
         $('#btn_confirm_cancelar').click(function(){
             $.post("core/ventas/controller_ventas.php", {action:'cancel'}, function(){
                 window.location="index.php";
@@ -217,53 +223,48 @@
 </script>
 </html>
 
-<div class="modal fade" id="modal_editar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<aside class="modal" id="modal_editar">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">
-						<span aria-hidden="true">&times;</span>
-						<span class="sr-only">Close</span>
-					</button>
 					<h4 class="modal-title" id="myModalLabel">Editar</h4>
 				</div>
 				<div class="modal-body">
 				<form id="form_edit">
 				<input type="hidden" id="txt_id_venta">
-				<label>Cantidad de productos</label>
-				<input type="text" placeholder="Cantidad" id="txt_editcant" name="txt_editcant" class="form-control">
+				<div class="input-field">
+					<label>Cantidad de productos</label>
+					<input type="text" placeholder="Cantidad" id="txt_editcant" name="txt_editcant">
+				</div>
 				</form>
 				</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-						<button type="button" class="btn btn-primary" id="btn_confirm_edit">Aceptar</button>
+						<button type="button" class="btn waves-effect waves-teal red modal-action modal-close">Cancelar</button>
+						<button type="button" class="btn waves-effect waves-teal blue" id="btn_confirm_edit">Aceptar</button>
 					</div>
 			</div>
 		</div>
 	</div>
+</aside>
 
 
-
-<div class="modal fade" id="modal_confirm_quitar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<aside class="modal" id="modal_confirm_quitar">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">
-					<span aria-hidden="true">&times;</span>
-					<span class="sr-only">Close</span>
-				</button>
 				<h4 class="modal-title" id="myModalLabel">Quitar producto</h4>
 			</div>
 			<div class="modal-body">
 			¿De verdad desea quitar el producto de la lista?
 			</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-					<button type="button" class="btn btn-primary" id="btn_confirm_quit">Aceptar</button>
+					<button type="button" class="btn waves-effect waves-teal red modal-action modal-close" data-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn waves-effect waves-teal blue" id="btn_confirm_quit">Aceptar</button>
 				</div>
 		</div>
-	</div>                        
-</div>
+	</div>   
+</aside>
+
 <script>
 	$('#form_edit').validate({
 		errorClass:"invalid",
@@ -279,7 +280,7 @@
 				var cantidad=$('#txt_editcant').val();
 				var id_venta=$('#txt_id_venta').val();
 			$.post("core/ventas/controller_ventas.php", {action:"update", id_venta:id_venta, cantidad:cantidad}, function(){
-					$('#modal_editar').modal("hide");
+					$('#modal_editar').modal("close");
 					get_all_ventas();
 					get_total();
 				});
@@ -287,24 +288,19 @@
 	});
 
 </script>
-
-<div class="modal fade" id="modal_confirm_cancelar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<aside class="modal" id="modal_confirm_cancelar">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">
-					<span aria-hidden="true">&times;</span>
-					<span class="sr-only">Close</span>
-				</button>
 				<h4 class="modal-title" id="myModalLabel">Cancelar venta</h4>
 			</div>
 			<div class="modal-body">
 			¿De verdad desea cancelar toda la venta?
 			</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-					<button type="button" class="btn btn-primary" id="btn_confirm_cancelar">Aceptar</button>
+					<button type="button" class="btn waves-effect waves-teal red modal-action modal-close">Cancelar</button>
+					<button type="button" class="btn waves-effect waves-teal blue" id="btn_confirm_cancelar">Aceptar</button>
 				</div>
 		</div>
 	</div>
-</div>
+</aside>

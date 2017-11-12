@@ -93,6 +93,7 @@ $("#form_productos").validate({
 			$.post("core/productos/controller_productos.php", $('#form_productos').serialize(), function(){
 				$('#container_modal').modal("close");
                 get_all_productos();
+                get_all_pagot();
 			});
 	}
 });	
