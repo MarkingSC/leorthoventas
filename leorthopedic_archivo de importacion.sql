@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 12-11-2017 a las 00:45:23
+-- Tiempo de generación: 18-11-2017 a las 20:15:59
 -- Versión del servidor: 5.7.19
 -- Versión de PHP: 5.6.31
 
@@ -90,7 +90,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `nva_catego` (`pdescripcion_c` VARCH
 END$$
 
 DROP PROCEDURE IF EXISTS `nva_devol`$$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `nva_devol` (`p_codigo` INT, `p_cantidad` INT, `pid_ticket` INT, `p_causa` TEXT(200))  BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `nva_devol` (IN `p_codigo` INT, IN `p_cantidad` INT, IN `pid_ticket` INT, IN `p_causa` TEXT)  BEGIN
  	DECLARE vid_prod INT;
  	DECLARE v_cantidad INT;
  	DECLARE v_subtotal FLOAT;
@@ -98,16 +98,16 @@ SELECT id_producto into vid_prod FROM productos, ventas, tickets WHERE  producto
 SELECT cantidad into v_cantidad FROM productos, ventas, tickets WHERE  productos.id_producto=vid_prod and productos.id_producto=ventas.id_producto and ventas.id_ticket=pid_ticket;
 	IF vid_prod=NULL
 		then
-			SELECT('DATOS DE CÓDIGO O FOLIO INCORRECTOS, VERIFIQUE.') as error;
+			SELECT 'ERROR' as tipo, 'DATOS DE CÓDIGO O FOLIO INCORRECTOS, VERIFIQUE.' as mensaje;
 		else
 			IF v_cantidad<=p_cantidad
 			then
 				UPDATE ventas set cantidad=cantidad-v_cantidad where id_ticket=pid_ticket and id_producto=vid_prod; #E RESTA LA CANTIDAD DE´PRODUCTOS DEVUELTOS A LA VENTA QUE SE REALIZO
 				UPDATE productos set existencias=existencias+p_cantidad where  productos.id_producto=vid_prod; # SE AGREGAN LA CANTIDAD DE ARTICULOS AL IVENTARIO
 				SELECT precio_venta*p_cantidad into v_subtotal from productos, ventas, tickets where   productos.codigo=p_codigo and productos.id_producto=ventas.id_producto and ventas.id_ticket=pid_ticket; #SE OBTIENE CUÁNTO SE LE HA DE REGRESAR AL CLIENTE
-				SELECT ('DEVOLUCIÓN PROCESADA, ENTREGUE AL CLIENTE LA CANTIDAD DE $'+v_subtotal+' PESOS.');
+				SELECT 'OK' as tipo, 'DEVOLUCIÓN PROCESADA, ENTREGUE AL CLIENTE LA CANTIDAD DE $'+v_subtotal+' PESOS.';
 			else
-				SELECT('ESA CANTIDAD DE PRODUCTOS A DEVOLVER NO ES CORRECTA.') as error;
+				SELECT 'ERROR' as tipo, 'ESA CANTIDAD DE PRODUCTOS A DEVOLVER NO ES CORRECTA.' as mensaje;
 			end if;
 	end if;
 END$$
@@ -115,22 +115,24 @@ END$$
 DROP PROCEDURE IF EXISTS `nva_ent`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `nva_ent` (IN `p_codigo` VARCHAR(45), IN `p_cant` INT, IN `p_costo` FLOAT, IN `p_observ` TEXT)  BEGIN
 DECLARE vid_prod INT;
+DECLARE vcid_prod INT;
+	SELECT count(id_producto) into vcid_prod FROM productos WHERE  productos.codigo=p_codigo;
 	SELECT id_producto into vid_prod FROM productos WHERE  productos.codigo=p_codigo;
 	IF p_cant<=0
 		then
-		SELECT('LA CANTIDAD DE PRODUCTOS NO ES CORRECTA.') as error;
+		SELECT 'ERROR' as tipo,'LA CANTIDAD DE PRODUCTOS NO ES CORRECTA.' as mensaje;
 		else
 			IF p_costo<=0
 				then
-				SELECT( 'EL COSTO DE PRODUCTO NO ES CORRECTO.') as error;
+				SELECT 'ERROR' as tipo,'EL COSTO DEL PRODUCTO NO ES CORRECTO.' as mensaje;
 				else
-				IF vid_prod=NULL
+				IF vcid_prod=0
 					then
-					SELECT('ESE PRODUCTO NO ESTÁ REGISTRADO.') as error;
+					SELECT 'ERROR' as tipo,'NO EXISTE UN PRODUCTO CON ESE CODIGO' as mensaje;
 					else
 						  INSERT INTO entradas VALUES(NULL, vid_prod, p_cant, p_costo, p_observ, CURRENT_TIMESTAMP);
 						  UPDATE productos set existencias=existencias+p_cant WHERE productos.codigo=p_codigo;
-						  SELECT ('NUEVA ENTRADA REGISTRADA.');
+						 SELECT 'OK' as tipo, 'NUEVA ENTRADA REGISTRADA.' as mensaje;	
 				end if;
 		end if;
 	end if;
@@ -147,8 +149,9 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `nva_talla` (`pdesc_talla` VARCHAR(4
 END$$
 
 DROP PROCEDURE IF EXISTS `nva_venta`$$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `nva_venta` (`p_codigo` VARCHAR(45), `p_cantidad` INT)  BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `nva_venta` (IN `p_codigo` VARCHAR(45), IN `p_cantidad` INT)  BEGIN
 DECLARE vid_prod INT;
+DECLARE vcid_prod INT;
 DECLARE v_prod INT;
 DECLARE v_precio FLOAT;
 DECLARE v_subtotal FLOAT;
@@ -156,38 +159,41 @@ DECLARE v_ticket INT;
 DECLARE v_disponibles INT;
 DECLARE v_codigo INT;
 SET vid_prod=0;
+SET vid_prod=0;
 SET v_precio=0;
 SET v_subtotal=0;
 SET v_ticket=0;
 SET v_disponibles=0;
 SET v_codigo=0;
 	SELECT id_producto into vid_prod FROM productos WHERE  productos.codigo=p_codigo;
+	SELECT count(id_producto) into vcid_prod FROM productos WHERE  productos.codigo=p_codigo;
+	SELECT id_ticket into v_ticket FROM tickets order by id_ticket desc limit 1;
 
-	SELECT COUNT(ventas.id_producto) as v_codigo from productos, ventas where ventas.id_producto=productos.id_producto AND productos.codigo=p_codigo and id_ticket=v_ticket;
+	SELECT COUNT(ventas.id_producto) into v_codigo from productos, ventas where ventas.id_producto=productos.id_producto AND productos.codigo LIKE p_codigo and id_ticket=v_ticket;
 	IF v_codigo>0
 	then
-		UPDATE ventas set cantidad=cantidad+p_cantidad where id_producto=vid_prod;
+		UPDATE ventas set cantidad=cantidad+p_cantidad where id_producto=vid_prod and ventas.id_ticket=v_ticket;
 	else
-		IF vid_prod=NULL
+		IF vcid_prod=0
 			then
-			SELECT('ESE PRODUCTO NO ESTÁ REGISTRADO.') as error;
+			SELECT 'ERROR' as tipo,'ESE PRODUCTO NO ESTA REGISTRADO.' as mensaje;
 			else
 				IF p_cantidad<=0
 					then
-					SELECT('LA CANTIDAD DE PRODUCTOS NO ES CORRECTA.') as error;
+					SELECT 'ERROR' as tipo,'LA CANTIDAD DE PRODUCTOS NO ES CORRECTA.' as mensaje;
 					else
 						SELECT existencias into v_disponibles from productos where id_producto=vid_prod;
 						IF p_cantidad>v_disponibles
 						then
-						SELECT('NO HAY SUFICIENTES PRODUCTOS.') as error;
+						SELECT 'ERROR' as tipo,'NO HAY PRODUCTOS SUFICIENTES' as mensaje;
 						else
 							
-							SELECT precio_venta into v_precio from productos where vid_prod=productos.id_producto;
+							SELECT precio_venta into v_precio from productos where productos.id_producto=vid_prod;
 							SET v_subtotal=v_precio*p_cantidad;
-						  	SELECT id_ticket into v_ticket from tickets order by id_ticket desc LIMIT 1; #SE OBTIENE EL TIQUET, QUE PÓR LÓGICA ES EL ÚLTIMO AGREGADO
 						  	INSERT INTO ventas VALUES(NULL, vid_prod, p_cantidad, v_ticket, v_subtotal); #SE INSERTA EL REGISTRO EN LA TABLA DE VENTAS
+                            
 						  	UPDATE productos set existencias=existencias-p_cantidad where id_producto=vid_prod; #SE RESTA LA EXISTENCIA EN LA TABLA DE PRODUCTOS
-		  					SELECT ('VENTA GENERADA CON ÉXITO.');	
+		  					SELECT 'OK' as tipo, 'NUEVA ENTRADA REGISTRADA.' as mensaje;	
 		  				end if;
 	  			end if;
 	  	end if;
@@ -336,7 +342,7 @@ CREATE TABLE IF NOT EXISTS `entradas` (
   `observaciones` tinytext,
   `fecha` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_entrada`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `entradas`
@@ -347,7 +353,19 @@ INSERT INTO `entradas` (`id_entrada`, `id_producto`, `cantidad`, `costo`, `obser
 (2, 1, 3, 58, '', '2017-11-09 03:12:22'),
 (3, 1, 10, 160, '', '2017-11-09 15:37:20'),
 (4, 2, 6, 1100, '', '2017-11-09 16:26:56'),
-(5, 2, 4, 2000, '', '2017-11-09 16:30:55');
+(5, 2, 4, 2000, '', '2017-11-09 16:30:55'),
+(6, 3, 2, 12, '', '2017-11-13 04:43:26'),
+(7, 3, 4, 200, '', '2017-11-13 04:45:35'),
+(8, 0, 1, 100, '', '2017-11-13 05:17:00'),
+(9, 2, 4, 100, '', '2017-11-13 05:52:57'),
+(10, 2, 1, 100, '', '2017-11-13 06:16:00'),
+(11, 2, 10, 100, '', '2017-11-13 06:16:59'),
+(12, 2, 2, 50, '', '2017-11-13 06:21:14'),
+(13, 2, 2, 50, '', '2017-11-13 06:21:19'),
+(14, 2, 10, 100, '', '2017-11-13 06:22:42'),
+(15, 2, 10, 240, '', '2017-11-13 06:24:43'),
+(16, 2, 8, 200, '', '2017-11-13 06:26:58'),
+(17, 2, 3, 100, '', '2017-11-13 18:14:28');
 
 -- --------------------------------------------------------
 
@@ -387,8 +405,8 @@ CREATE TABLE IF NOT EXISTS `productos` (
 --
 
 INSERT INTO `productos` (`id_producto`, `codigo`, `descripcion_p`, `id_categoria`, `precio_venta`, `precio_adq`, `minimo`, `existencias`) VALUES
-(3, '12345', 'CollarÃ­n Beige', 1, 280, 0, 4, 0),
-(2, '22222', 'Muleta', 3, 270, 0, 2, 1),
+(3, '12345', 'CollarÃ­n Beige', 1, 280, 0, 4, 6),
+(2, '22222', 'Muleta', 3, 270, 0, 2, 43),
 (4, '11111', 'Andadera aluminio', 3, 500, 0, 2, 0);
 
 -- --------------------------------------------------------
@@ -450,7 +468,7 @@ CREATE TABLE IF NOT EXISTS `tickets` (
   `fecha` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `procesado` int(11) NOT NULL,
   PRIMARY KEY (`id_ticket`)
-) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=26 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `tickets`
@@ -472,7 +490,16 @@ INSERT INTO `tickets` (`id_ticket`, `cliente`, `total`, `fecha`, `procesado`) VA
 (13, 'Gaby', 540, NULL, 1),
 (14, 'Marco', 810, NULL, 1),
 (15, 'Marco', 0, NULL, 0),
-(16, 'Marco', 69, NULL, 1);
+(16, 'Marco', 69, NULL, 1),
+(17, 'Marco', 0, NULL, 0),
+(18, 'Marco', 0, NULL, 0),
+(19, 'Marco', 0, NULL, 0),
+(20, 'Marco', 0, NULL, 0),
+(21, 'Marco', 0, NULL, 0),
+(22, 'marco', 0, NULL, 0),
+(23, 'Marco', 0, NULL, 0),
+(24, 'Marco', 0, NULL, 0),
+(25, 'Gaby', 0, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -501,26 +528,29 @@ CREATE TABLE IF NOT EXISTS `ventas` (
   `id_ticket` int(11) NOT NULL,
   `subtotal` float NOT NULL,
   PRIMARY KEY (`id_venta`)
-) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `ventas`
 --
 
 INSERT INTO `ventas` (`id_venta`, `id_producto`, `cantidad`, `id_ticket`, `subtotal`) VALUES
-(1, 1, 2, 3, 46),
-(2, 1, 2, 4, 46),
-(3, 1, 2, 6, 46),
-(4, 1, 1, 7, 23),
-(5, 1, 1, 8, 23),
-(6, 1, 1, 9, 23),
+(1, 1, 2, 3, 540),
+(2, 1, 2, 4, 540),
+(3, 1, 2, 6, 540),
+(4, 1, 1, 7, 540),
+(5, 1, 1, 8, 540),
+(6, 1, 1, 9, 540),
 (7, 2, 2, 11, 540),
-(8, 2, 1, 12, 270),
-(9, 2, 1, 12, 270),
+(8, 2, 1, 12, 540),
+(9, 2, 1, 12, 540),
 (10, 2, 2, 13, 540),
-(11, 2, 3, 14, 810),
-(12, 1, 2, 16, 46),
-(13, 1, 1, 16, 23);
+(11, 2, 3, 14, 540),
+(12, 1, 2, 16, 540),
+(13, 1, 1, 16, 540),
+(14, 2, 1, 20, 540),
+(15, 2, 1, 21, 540),
+(19, 2, 1, 24, 540);
 
 -- --------------------------------------------------------
 

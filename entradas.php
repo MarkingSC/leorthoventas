@@ -14,11 +14,9 @@
 	<script>
 		$(document).ready(function(){
 			get_all_entradas();
+			$("#container_modal").modal();
 			});
 
-			$("#content_table").on("click", "a.btn_deta", function(){
-				alert("Detalles");
-			});
 	</script>
 </head>
 <body>
@@ -55,6 +53,7 @@
 					<label>Costo</label>
 				</div>
 				<div class="align-text right">
+					<label id="lblRes" class="error"></label>
 					<button class="btn waves-effect waves-teal" type="submit"><span class="material-icons">check</span>Aceptar</button>
 				</div>
 			</div>
@@ -70,7 +69,7 @@
 				<th class="tit_col">Observaciones</th>
 				<th class="tit_col" style="width: 5em;">Detalles</th>
 			</tr>
-			<tbody id="content_table"></tbody>
+			<tbody id="tbody_entradas"></tbody>
 			</table>
 		</div>
 	</div>
@@ -87,30 +86,50 @@ get_all_entradas();
 				for(var i=0;i<datos.length;i++)
 				{
 					var info=datos[i];
-					cod_html+="<tr><td> "+info["producto"]+" </td><td> "+info["cantidad"]+" </td><td> "+info["fecha"]+" </td><td>"+info["observaciones"]+"</td><td><div class='btn orange btnSmallCircle'><span class='material-icons'>info</span></div></td></tr>";
-					$("#content_table").html(cod_html);
+					cod_html+="<tr><td> "+info["producto"]+" </td><td> "+info["cantidad"]+" </td><td> "+info["fecha"]+" </td><td>"+info["observaciones"]+"</td><td><a href='#' class='btn orange btnSmallCircle btnInfoEntrada' data-id="+info['id_entrada']+"><span class='material-icons'>info</span></a></td></tr>";
+					$("#tbody_entradas").html(cod_html);
 				}
 			});	
 		}
 
 	$("#form_ent").validate({
-			errorClass:"invalid",
-			rules:{
-				codigo:{required:true},
-				cantidad:{required:true},
-				costo:{required:true},
-			},
-			messages:{
-				codigo:{required:"Introduzca un código válido."},
-				cantidad:{required:"Especifique una cantidad."},
-				costo:{required:"Defina el costo."},
-			},
-			submitHandler: function(form){
+		errorClass:"invalid",
+		rules:{
+			codigo:{required:true},
+			cantidad:{required:true},
+			costo:{required:true},
+		},
+		messages:{
+			codigo:{required:"Introduzca un código válido."},
+			cantidad:{required:"Especifique una cantidad."},
+			costo:{required:"Defina el costo."},
+		},
+		submitHandler: function(form){
 
-			$.post("core/entradas/controller_entradas.php", $('#form_ent').serialize(), function(){
+			$.post("core/entradas/controller_entradas.php", $('#form_ent').serialize(), function(res){
+				var datos=JSON.parse(res);
+				var info=datos[0];
+				if(info['tipo']=="ERROR")
+				{
+					document.getElementById('lblRes').classList.remove("ok");
+					document.getElementById('lblRes').classList.add("error");
+					$("#lblRes").html("ERROR: "+info['mensaje']);
+				}
+				else{
+					document.getElementById('lblRes').classList.remove("error");
+					document.getElementById('lblRes').classList.add("ok");
+					$("#lblRes").html("ENTRADA AGREGADA.");
+				}
 				get_all_entradas();
 			});
 		}
+
+	});
+
+
+	$("#tbody_entradas").on("click", "a.btnInfoEntrada", function(){
+		$("#container_modal").load("core/entradas/detalles.php");
+		$("#container_modal").modal("open");
 	});
     
 	</script>

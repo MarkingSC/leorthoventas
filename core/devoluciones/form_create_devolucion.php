@@ -1,30 +1,36 @@
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">
-						<span aria-hidden="true">&times;</span>
-						<span class="sr-only">Close</span>
-					</button>
-					<h4 class="modal-title" id="myModalLabel">Devolver un producto</h4>
-				</div>
-				<div class="modal-body">
-					<form action="insert" style="background: none" method="post"  id="form_devol" name="form_cortes">
-					<input type="text" name="ticket" placeholder="Folio del ticket" class="form-control">
-					<input type="text" name="codigo" placeholder="Código del producto a devolver" class="form-control">
-					<input type="text" name="cantidad" placeholder="Cantidad a devolver" class="form-control">
-					<input type="text" name="causa" placeholder="¿Por qué se devolvió?" class="form-control">
-					</form>
-				</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-						<button type="button" class="btn btn-primary" id="btn_aceptar">Aceptar</button>
-					</div>
-			</div>
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h4 class="modal-title" id="myModalLabel">Devolver un producto</h4>
 		</div>
+		<div class="modal-body">
+			<form action="insert" method="post"  id="form_devol" name="form_devol">
+				<div class="input-field">
+					<input type="text" name="ticket">
+					<label>Folio del ticket</label>
+				</div>
+				<div class="input-field">
+					<input type="text" name="codigo">
+					<label>Código del producto</label>
+				</div>
+				<div class="input-field">
+					<input type="text" name="cantidad">
+					<label>Cantidad a devolver</label>
+				</div>
+				<div class="input-field">
+					<input type="text" name="causa">
+					<label>¿Por qué lo devuelve?</label>
+				</div>
+			</form>
+		</div>
+			<div class="modal-footer">
+				<label id="lblResDev" class="error"></label>
+				<button class="btn waves-effect waves-teal red modal-action modal-close" data-dismiss="modal">Cancelar</button>
+				<button class="btn waves-effect waves-teal blue" id="btn_aceptar">Aceptar</button>
+			</div>
 	</div>
+</div>
 	<script type="text/javascript">
-	$('#myModal').modal();	
 
 	$('#btn_aceptar').click(function(){
 		$('#form_devol').submit();
@@ -52,9 +58,22 @@
 					causa:{required:"Introduzca una causa"}
 				},
 				submitHandler: function(form){
-					$.post("core/devoluciones/controller_devoluciones.php", {action:"insert"}, function(){
+					$.post("core/devoluciones/controller_devoluciones.php", {action:"insert"}, function(res){
+						var datos=JSON.parse(res);
+						var info=datos[0];
+						if(info['tipo']=="ERROR")
+						{
+							document.getElementById('lblRes').classList.remove("ok");
+							document.getElementById('lblRes').classList.add("error");
+							$("#lblRes").html("ERROR: "+info['mensaje']);
+						}
+						else{
+							document.getElementById('lblRes').classList.remove("error");
+							document.getElementById('lblRes').classList.add("ok");
+							$("#lblRes").html("ENTRADA AGREGADA.");
+						}
 						get_all();
-						$("#myModal").modal("hide");
+						$('#container_modal').modal(info['mensaje']);
 					});
 			}
 		});

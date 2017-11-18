@@ -26,3 +26,13 @@ body{
 #div_alerta{
 	border: solid 1px red;
 }
+
+.error{
+	color: red;
+	font-size: 1em;
+}
+
+.ok{
+	color: green;
+	font-size: 1em;	
+}

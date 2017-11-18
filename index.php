@@ -14,13 +14,12 @@
 	<script>
 		$(document).ready(function(){
 			Materialize.updateTextFields();
-			$('#modal_confirm_quitar').modal();
-			$('#modal_editar').modal();
-        	$('#modal_confirm_cancelar').modal();
+			$('.modal').modal();
 
 			$("#content_table").on("click", "button.btn_quitar", function(){
 				var id_venta=$(this).data("id");
 				console.log("id de venta: "+id_venta);
+				$('.modal').modal();
 				$('#modal_confirm_quitar').modal("open");
 				$('#btn_confirm_quit').click(function(event){
 				console.log("entro a la funcion del boton");
@@ -100,6 +99,7 @@
 							</div>
 						</div>
 						<div class="col offset-s1 offset-m1 offset-l1 s3 m3 l3">
+							<label id="lblComprueba"></label>
 							<button id="btn_agregar" class="btn waves-effect waves-teal" type="submit" style="position:relative; margin-top: 1.5em"><span class="material-icons">check</span>Agregar</button>
 						</div>
 					</div>
@@ -143,14 +143,13 @@
 	{
 		$.post("core/ventas/controller_ventas.php", {action:"get_all"}, function(res){
 				var datos=JSON.parse(res);
-				var cod_html;
+				var cod_html="";
 				for(var i=0;i<datos.length;i++)
 				{
 					var info=datos[i];
-					cod_html+="<tr><td class='campo'>"+info['codigo']+" </td><td class='campo'>"+info['producto']+" </td><td class='campo'>"+info['precio']+" </td><td class='campo'>"+info['cantidad']+"</td><td class='campo'>"+info['subtotal']+"</td><td class='botones'><button class='btn red btnSmallCircle' data-id="+info['id_venta']+"><span class='material-icons'>delete</span>Quitar</button></td><td class='botones'><button class='btn blue btnSmallCircle' data-id="+info['id_venta']+"><span class='material-icons'>edit</span>Editar</button></td></tr>";
-					$("#content_table").html(cod_html);
-					
+					cod_html+="<tr><td class='campo'>"+info['codigo']+" </td><td class='campo'>"+info['producto']+" </td><td class='campo'>"+info['precio']+" </td><td class='campo'>"+info['cantidad']+"</td><td class='campo'>"+info['subtotal']+"</td><td class='botones'><button class='btn red btnSmallCircle btn_quitar' data-id="+info['id_venta']+"><span class='material-icons'>delete</span>Quitar</button></td><td class='botones'><button class='btn blue btnSmallCircle btn_editar' data-id="+info['id_venta']+"><span class='material-icons'>edit</span>Editar</button></td></tr>";
 				}
+				$("#content_table").html(cod_html);
 			});	
 	}
 	$("#btn_newdev").click(function(){
@@ -212,8 +211,21 @@
 								digits:"Sólo números."},
 			},
 			submitHandler: function(form){
-				$.post("core/ventas/controller_ventas.php", $('#form_dos').serialize(), function(){
+				$.post("core/ventas/controller_ventas.php", $('#form_dos').serialize(), function(res){
+					var datos=JSON.parse(res);
+				var info=datos[0];
+				if(info['tipo']=="ERROR")
+				{
+					document.getElementById('lblComprueba').classList.remove("ok");
+					document.getElementById('lblComprueba').classList.add("error");
+					$("#lblComprueba").html("ERROR: "+info['mensaje']);
+				}
+				else{
+					document.getElementById('lblComprueba').classList.remove("error");
+					document.getElementById('lblComprueba').classList.add("ok");
+					$("#lblComprueba").html("PRODUCTO AGREGADO");
 					document.getElementById('tabla_vta').classList.remove("invisible");
+				}
 						get_all_ventas();
 						get_total();
 				});
@@ -257,10 +269,10 @@
 			<div class="modal-body">
 			¿De verdad desea quitar el producto de la lista?
 			</div>
-				<div class="modal-footer">
-					<button type="button" class="btn waves-effect waves-teal red modal-action modal-close" data-dismiss="modal">Cancelar</button>
-					<button type="button" class="btn waves-effect waves-teal blue" id="btn_confirm_quit">Aceptar</button>
-				</div>
+			<div class="modal-footer">
+				<button type="button" class="btn waves-effect waves-teal red modal-action modal-close" data-dismiss="modal">Cancelar</button>
+				<button type="button" class="btn waves-effect waves-teal blue" id="btn_confirm_quit">Aceptar</button>
+			</div>
 		</div>
 	</div>   
 </aside>
